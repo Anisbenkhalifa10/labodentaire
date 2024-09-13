@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une Commande - Médecine Dentaire</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+
+        nav {
+            background: #004d40;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            color: #ffab40;
+        }
+
+        .secondary-nav {
+            background: #e0f2f1;
+            padding: 10px;
+            text-align: center;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .secondary-nav a {
+            color: #004d40;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .secondary-nav a:hover {
+            color: #ffab40;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        h1 {
+            color: #004d40;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #004d40;
+        }
+
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        form button {
+            background: #004d40;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        form button:hover {
+            background: #00332e;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'home_client' %}">Accueil Client</a>
+        <a href="{% url 'login' %}">Connexion Admin</a>
+    </nav>
+
+    <div class="secondary-nav">
+        <a href="{% url 'commander' %}">Commander</a>
+        <a href="#">Produits</a>
+    </div>
+
+    <div class="content">
+        <h1>Ajouter une Nouvelle Commande</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_client">Client</label>
+                <select name="client" id="id_client" class="form-control">
+                    {% for client in clients %}
+                        <option value="{{ client.id }}">{{ client.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_patient">Patient</label>
+                <select name="patient" id="id_patient" class="form-control">
+                    {% for patient in patients %}
+                        <option value="{{ patient.id }}">{{ patient.nom }}-{{ patient.id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_date_commande">Date de Commande</label>
+                {{ form.date_commande }}
+            </div>
+            <div class="form-group">
+                <label for="id_statut">Statut</label>
+                {{ form.statut }}
+            </div>
+            <button type="submit">Ajouter Commande</button>
+        </form>
+    </div>
+</body>
+</html>

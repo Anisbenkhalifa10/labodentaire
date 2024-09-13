@@ -1,0 +1,56 @@
+<style>
+   
+    
+    nav {
+        background: #333;
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+    }
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 20px;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+    nav a:hover {
+        color: #f39c12;
+    }
+    .container {
+        display: flex;
+        margin: 20px;
+    }
+    .sidebar {
+        width: 250px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .main-content {
+        flex: 1;
+        margin-left: 20px;
+    }
+    .main-content h1 {
+        color: #333;
+        border-bottom: 2px solid #f39c12;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    
+   
+
+    
+
+</style>
+</head>
+<body>
+<nav>
+    <a href="{% url 'dashbord' %}">Dashboard</a>
+    <a href="{% url 'liste_commandes' %}">Commandes</a>
+    <a href="{% url 'liste_clients' %}">Clients</a>
+    <a href="{% url 'liste_patients' %}">Patients</a>
+    <a href="{% url 'home_client' %}">Déconnexion</a>
+</nav>

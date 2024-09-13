@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Commandes</title>
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+      }
+      nav {
+        background: #333;
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+      }
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 20px;
+        font-weight: bold;
+        transition: color 0.3s;
+      }
+      nav a:hover {
+        color: #f39c12;
+      }
+      .container {
+        display: flex;
+        margin: 20px;
+      }
+      .sidebar {
+        width: 250px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .main-content {
+        flex: 1;
+        margin-left: 20px;
+      }
+      .main-content h1 {
+        color: #333;
+        border-bottom: 2px solid #f39c12;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      form {
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+      }
+      .form-group input, .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .form-group button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+      }
+      .form-group button:hover {
+        background-color: #0056b3;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      table th, table td {
+        padding: 15px;
+        text-align: left;
+      }
+      table thead {
+        background-color: #007bff;
+        color: #fff;
+      }
+      table tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+      }
+      table tbody tr:hover {
+        background-color: #f1f1f1;
+      }
+      .date-en-attente {
+        background-color: #f1ee0a !important; /* Jaune clair */
+        color: #333 !important; /* Texte sombre pour contraste */
+      }
+      .date-en-cours {
+        background-color: #2196f3 !important; /* Bleu */
+        color: #fff !important; /* Texte clair pour contraste */
+      }
+      .date-complete {
+        background-color: #4caf50 !important; /* Vert */
+        color: #fff !important; /* Texte clair pour contraste */
+      }
+      .date-refuse {
+        background-color: #f44336 !important; /* Rouge */
+        color: #fff !important; /* Texte clair pour contraste */
+      }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'dashbord' %}">Dashboard</a>
+        <a href="{% url 'liste_commandes' %}">Commandes</a>
+        <a href="{% url 'liste_clients' %}">Clients</a>
+        <a href="{% url 'liste_patients' %}">Patients</a>
+        <a href="{% url 'logout' %}">Déconnexion</a>
+    </nav>
+    
+    <div class="container">
+        <div class="sidebar">
+            <h3>Filtrer les Commandes</h3>
+            <form method="get">
+                <div class="form-group">
+                    <label for="search">Recherche:</label>
+                    <input type="text" id="search" name="search" value="{{ request.GET.search }}">
+                </div>
+                <div class="form-group">
+                    <label for="status">Statut:</label>
+                    <select id="status" name="status">
+                        <option value="">Tous</option>
+                        <option value="en_attente" {% if request.GET.status == 'en_attente' %}selected{% endif %}>En Attente</option>
+                        <option value="en_cours" {% if request.GET.status == 'en_cours' %}selected{% endif %}>En Cours</option>
+                        <option value="complete" {% if request.GET.status == 'complete' %}selected{% endif %}>Complète</option>
+                        <option value="refuse" {% if request.GET.status == 'refuse' %}selected{% endif %}>Refusée</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Filtrer</button>
+                </div>
+            </form>
+        </div>
+        <div class="main-content">
+            <h1>Liste des Commandes</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Client</th>
+                        <th>Patient</th>
+                        <th>Date de Commande</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes %}
+                    <tr>
+                        <td>{{ commande.id }}</td>
+                        <td>{{ commande.client.nom }}</td>
+                        <td>{{ commande.patient.nom }} {{ commande.patient.prenom }}</td>
+                        <td class="date-{{ commande.statut }}">{{ commande.date_commande }}</td>
+                        <td class="{{ commande.statut }}">{{ commande.get_statut_display }}</td>
+                        <td><a href="{% url 'modifier_commande' commande.id %}" class="btn">Modifier</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">Aucune commande trouvée.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

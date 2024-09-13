@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    {% load static %}
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-image {
+            flex: 1; /* Occupe la moitié gauche */
+            background: url('{% static "images/log.jpg" %}') no-repeat center center;
+            background-size: cover; /* Assure que l'image couvre l'ensemble de l'élément */
+            filter: brightness(80%); /* Assombrir l'image pour le contraste */
+            height: 100%;
+            background-position: center; /* Centre l'image */
+            position: relative;
+        }
+
+        .login-form {
+            flex: 1; /* Occupe la moitié droite */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-left: 1px solid #ddd; /* Bordure pour séparer l'image du formulaire */
+            background-color: #ffffff; /* Fond du formulaire blanc pour le contraste */
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50; /* Couleur du texte du titre */
+            font-size: 24px; /* Taille du texte du titre */
+            font-weight: 600; /* Poids de la police du titre */
+        }
+
+        .login-form form {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            background: #f9f9f9; /* Fond du formulaire légèrement gris */
+            padding: 20px;
+            border-radius: 8px; /* Bordures arrondies */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre portée pour un effet de profondeur */
+        }
+
+        .login-form input, .login-form button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px; /* Espacement entre les champs */
+            border-radius: 5px;
+            border: 1px solid #ddd; /* Couleur de bordure douce */
+            box-sizing: border-box;
+            font-size: 16px; /* Taille de police pour les champs et boutons */
+        }
+
+        .login-form input {
+            background-color: #ffffff; /* Fond des champs de saisie en blanc */
+            color: #333; /* Couleur du texte dans les champs */
+        }
+
+        .login-form button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Style des labels */
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555; /* Couleur des labels */
+            font-weight: 500; /* Poids de la police des labels */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-image"></div>
+        <div class="login-form">
+            <form method="post">
+                {% csrf_token %}
+                <h2>Se connecter</h2>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <p style="color:red;">{{ message }}</p>
+                        {% else %}
+                            <p style="color:red;">{{ message }}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {{ form.as_p }} <!-- Affiche les champs username et password -->
+                <button type="submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

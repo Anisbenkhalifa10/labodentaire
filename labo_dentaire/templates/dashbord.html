@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+       
+        
+      
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .dashboard-stats, .kpi, .chart-container, .table-container, .alert {
+            margin-bottom: 20px;
+        }
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stat, .kpi-item, .table-container, .alert {
+            border-radius: 8px;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .stat h2, .chart-container h2, .kpi-item h3, .table-container h2, .alert h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .stat p, .kpi-item p {
+            font-size: 2em;
+            color: #007bff;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+        .kpi {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .kpi-item {
+            text-align: center;
+            flex: 1;
+            padding: 20px;
+            border-radius: 8px;
+            background: #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .kpi-item h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .kpi-item p {
+            margin: 5px 0;
+            font-size: 1.5em;
+            color: #007bff;
+        }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th, .table-container td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .table-container th {
+            background-color: #f4f4f9;
+            font-weight: bold;
+        }
+        .alert {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        .alert p {
+            margin: 0;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="container">
+        <h1>Tableau de Bord</h1>
+
+        <div class="alert">
+            <h2>Alerte!</h2>
+            <p>Il y a des commandes en retard. Veuillez vérifier les détails dans la section des commandes.</p>
+        </div>
+
+        <div class="dashboard-stats">
+            <div class="stat">
+                <h2>Commandes d'aujourd'hui</h2>
+                <p>{{ commandes_aujourd_hui }}</p>
+            </div>
+            <div class="stat">
+                <h2>Commandes de demain</h2>
+                <p>{{ commandes_demain }}</p>
+            </div>
+        </div>
+
+        <div class="kpi">
+            <div class="kpi-item">
+                <h3>Total Commandes</h3>
+                <p>{{ total_commandes }}</p>
+            </div>
+            <div class="kpi-item">
+                <h3>Total Clients</h3>
+                <p>{{ total_clients }}</p>
+            </div>
+            <div class="kpi-item">
+                <h3>Total Patients</h3>
+                <p>{{ total_patients }}</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Répartition des Commandes</h2>
+            <canvas id="ordersChart"></canvas>
+        </div>
+        
+        <div class="table-container">
+            <h2>Commandes Récentes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Client</th>
+                        <th>Patient</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes_recentes %}
+                        <tr>
+                            <td>{{ commande.id }}</td>
+                            <td>{{ commande.date_commande }}</td>
+                            <td>{{ commande.client.nom }}</td>
+                            <td>{{ commande.patient.nom }} {{ commande.patient.prenom }}</td>
+                            <td>{{ commande.get_statut_display }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">Aucune commande récente.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('ordersChart').getContext('2d');
+        var ordersChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['En Attente', 'En Cours', 'Complète', 'Refusée'],
+                datasets: [{
+                    label: 'Répartition des Commandes',
+                    data: [
+                        {{ commandes_statut.en_attente }},
+                        {{ commandes_statut.en_cours }},
+                        {{ commandes_statut.complete }},
+                        {{ commandes_statut.refusee }}
+                    ],
+                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56']
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

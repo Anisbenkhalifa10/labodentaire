@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Clients</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #444;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 300px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .card p {
+            margin: 5px 0;
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        .actions {
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        .actions button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.3s;
+        }
+
+        .actions .edit-btn {
+            background-color: #007bff;
+            color: #fff;
+            margin-right: 5px;
+        }
+
+        .actions .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .actions .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .actions .delete-btn:hover {
+            background-color: #b02a37;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 100px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            float: right;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            cursor: pointer;
+        }
+
+        .modal-form-group label {
+            font-weight: bold;
+        }
+
+        .modal-form-group input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .modal-form-group button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .modal-form-group button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <h1 class="text-center text-light">Liste des Clients</h1>
+        <br>
+        <div class="text-right mb-3">
+            <button class="btn btn-success" onclick="openModal('add')"><i class="fas fa-plus-circle"></i> Ajouter un Client</button>
+        </div>
+        <div class="card-container">
+            {% for client in clients %}
+            <div class="card">
+                <h2>{{ client.nom }}</h2>
+                <p><strong>ID:</strong> {{ client.id }}</p>
+                <p><strong>Adresse:</strong> {{ client.adresse }}</p>
+                <p><strong>Téléphone:</strong> {{ client.telephone }}</p>
+                <p><strong>Email:</strong> {{ client.email }}</p>
+                <div class="actions">
+                    <button class="edit-btn" onclick="openModal('edit', {{ client.id }}, '{{ client.nom }}', '{{ client.adresse }}', '{{ client.telephone }}', '{{ client.email }}')"><i class="fas fa-edit"></i> Modifier</button>
+
+                    <a class="delete-btn" href="{% url 'confirm_delete' client.id %}" style="display:inline;">Supprimer</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="card">
+                <p>Aucun client trouvé.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit Client -->
+    <div id="clientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Ajouter un Client</h2>
+            <form method="post" id="clientForm" action="{% url 'ajouter_client' %}">
+                {% csrf_token %}
+                <div class="modal-form-group">
+                    <label for="nom">Nom:</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+                <div class="modal-form-group">
+                    <label for="adresse">Adresse:</label>
+                    <input type="text" id="adresse" name="adresse" required>
+                </div>
+                <div class="modal-form-group">
+                    <label for="telephone">Téléphone:</label>
+                    <input type="text" id="telephone" name="telephone" required>
+                </div>
+                <div class="modal-form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="modal-form-group text-center">
+                    <button type="submit">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(mode, clientId = null, nom = '', adresse = '', telephone = '', email = '') {
+            var modal = document.getElementById('clientModal');
+            var form = document.getElementById('clientForm');
+            var modalTitle = document.getElementById('modalTitle');
+
+            if (mode === 'edit') {
+                modalTitle.innerText = "Modifier le Client";
+                form.action = "{% url 'modifier_client' 0 %}".replace(0, clientId);
+                document.getElementById('nom').value = nom;
+                document.getElementById('adresse').value = adresse;
+                document.getElementById('telephone').value = telephone;
+                document.getElementById('email').value = email;
+            } else {
+                modalTitle.innerText = "Ajouter un Client";
+                form.action = "{% url 'ajouter_client' %}";
+                form.reset();
+            }
+
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('clientModal').style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            var modal = document.getElementById('clientModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>
