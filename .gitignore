@@ -1,24 +1,38 @@
-# Django
-*.log
-*.pot
+# Environnements virtuels
+venv/
+env/
+
+# Fichiers de configuration spécifiques à l'IDE
+*.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Fichiers Python compilés
 *.pyc
+*.pyo
 __pycache__/
-db.sqlite3
-media/
-static/
 
-# Env variables
-.env
+# Clés et fichiers sensibles
+*.env
+.env.local
+.env.*
 
-# Python
-*.py[cod]
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
+# Fichiers de logs
 *.log
 
-# MySQL dump files
-*.sql
+# Fichiers temporaires de l'OS
+.DS_Store
+Thumbs.db
+
+# Migrations de Django
+*/migrations/*
+!*/migrations/__init__.py
+
+# Media et uploads
+media/
+uploads/
+
+# Static files
+staticfiles/
+
